@@ -1,47 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>D3: SVG bar chart with value labels (centered)</title>
-		<script type="text/javascript" src="d3.v7.js"></script>
-		<style type="text/css">
-			svg{
-				border:1px solid black;
-			}		
-		</style>
-	</head>
-	<body>
-		<script type="text/javascript">
+<head>
+    <meta charset="utf-8">
+    <title>D3: SVG bar chart with value labels (centered)</title>
+    <script type="text/javascript" src="d3.v7.js"></script>
+    <style type="text/css">
+        svg {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript">
+        // Width and height
+        var w = 500;
+        var h = 300;
 
-        //Width and height
-			var w = 500;
-			var h = 300;
+        // Define map projection
+        var projection = d3.geoAlbersUsa()
+            .translate([w / 2, h / 2])
+            .scale([500]);
 
+        // Define path generator
+        var path = d3.geoPath()
+            .projection(projection);
 
-			//Create SVG element
-			var svg = d3.select("body")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
-		
-			//Define path generator, using the Albers USA projection
+        // Define quantize scale to sort data values into buckets of color
+        var color = d3.scaleQuantize()
+            .range(["rgb(255, 218, 185)", "rgb(251, 196, 171)", "rgb(248, 173, 157)", "rgb(244, 151, 142)", "rgb(240, 128, 128)"]);
 
-            var projection = d3.geoAlbersUsa()
-							   .translate([w/2, h/2]).scale(500);
-			var path = d3.geoPath()
-				 		 .projection(projection);
+        // Create SVG element
+        var svg = d3.select("body")
+            .append("svg")
+            .attr("width", w)
+            .attr("height", h);
 
-			//Load in GeoJSON data
-			d3.json("us-states.json").then(function(json) {
+        // Load the CSV data and JSON data
+        Promise.all([
+            d3.csv("data.csv"),
+            d3.json("us-states.json")
+        ]).then(function([data, json]) {
+
+            // Set input domain for color scale
+            color.domain([
+                d3.min(data, function(d) { return +d.value; }),
+                d3.max(data, function(d) { return +d.value; })
+            ]);
+
+            // Merge the agriculture data and GeoJSON
+            data.forEach(function(d) {
+                var dataState = d.state;
+                var dataValue = +d.value;  // Ensure numeric value
+
+                // Find the corresponding state inside the GeoJSON
+                var stateFeature = json.features.find(function(f) {
+                    return f.properties.name === dataState;
+                });
+
+                if (stateFeature) {
+                    stateFeature.properties.value = dataValue;
+                }
+            });
+
             // Bind data and create one path per GeoJSON feature
-				svg.selectAll("path")
-				.data(json.features)
-				.enter()
-				.append("path")
-				.attr("d", path);
-			}).catch(function(error) {
-				alert("error loading the GeoJSON data:"+ error);
-			});
+            svg.selectAll("path")
+                .data(json.features)
+                .enter()
+                .append("path")
+                .attr("d", path)
+                .style("fill", function(d) {
+                    var value = d.properties.value;
+                    if (value) {
+                        return color(value);
+                    } else {
+                        return "#ccc";
+                    }
+                });
+        }).catch(function(error) {
+            console.error("Error loading the data: " + error);
+        });
+
     </script>
 </body>
 </html>
