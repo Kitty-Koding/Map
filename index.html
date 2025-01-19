@@ -27,7 +27,7 @@
 
         // Define quantize scale to sort data values into buckets of color
         var color = d3.scaleQuantize()
-            .range(["rgb(255, 218, 185)", "rgb(251, 196, 171)", "rgb(248, 173, 157)", "rgb(244, 151, 142)", "rgb(240, 128, 128)"]);
+            .range(["rgb(255, 218, 185)", "rgb(253, 207, 178)", "rgb(251, 196, 171)", "rgb(250, 185, 164)", "rgb(248, 173, 157)","rgb(246, 162, 150)","rgb(244, 151, 142)","rgb(242, 140, 135)","rgb(240, 128, 128)","rgb(218, 116, 116)"]);
 
         // Create SVG element
         var svg = d3.select("body")
@@ -75,7 +75,7 @@
                     } else {
                         return "#ccc";
                     }
-                }).style("stroke","#000").style("stroke-width","2");
+                }).style("stroke","#fff").style("stroke-width","2");
         }).catch(function(error) {
             console.error("Error loading the data: " + error);
         });
