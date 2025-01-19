@@ -32,15 +32,15 @@
 				 		 .projection(projection);
 
 			//Load in GeoJSON data
-			d3.json("us-states.json", function(json) {
-				
-				//Bind data and create one path per GeoJSON feature
+			d3.json("us-states.json").then(function(json) {
+            // Bind data and create one path per GeoJSON feature
 				svg.selectAll("path")
-				   .data(json.features)
-				   .enter()
-				   .append("path")
-				   .attr("d", path);
-		
+				.data(json.features)
+				.enter()
+				.append("path")
+				.attr("d", path);
+			}).catch(function(error) {
+				console.error("Error loading the GeoJSON data:", error);
 			});
     </script>
 </body>
