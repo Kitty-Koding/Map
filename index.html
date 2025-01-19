@@ -7,14 +7,20 @@
     <script type="text/javascript" src="d3.v7.js"></script>
 </head>
 <body>
+    <h1>HI</h1>
     <script type="text/javascript">
+            d3.selectAll("h1").append("hello");
+
         //Width and height
 			var w = 500;
 			var h = 300;
 
 			//Define path generator, using the Albers USA projection
+
+            var projection = d3.geoAlbersUsa()
+							   .translate([w/2, h/2]);
 			var path = d3.geoPath()
-				 		 .projection(d3.geoAlbersUsa());
+				 		 .projection(projection);
 
 			//Create SVG element
 			var svg = d3.select("body")
